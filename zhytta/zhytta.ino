@@ -12,8 +12,12 @@ Config appConfig;
 AppState state;
 
 
+
+
 void setup(){  
-  Serial.begin(115200); 
+  Serial.begin(115200);
+  pinMode(led,OUTPUT);
+  state.ledPin = led ;
   bool wifi_conn_result = connectWifi();
   if(wifi_conn_result == true){
     Serial.println("wifi is connected;");

@@ -5,19 +5,59 @@ void startServer(){
 }
 
 bool shouldOpenServer(){
-  state.isRunning = true;
+  state.isRunning = is_server_button_pressed();
   return state.isRunning;
+}
+
+void toogleServer(){
+  if(state.isRunning == true){
+    state.isRunning = false;
+  }else{
+    state.isRunning = true;
+  }
+}
+
+bool is_server_button_pressed(){
+if(digitalRead(server_button) ==LOW){
+  return true;
+}else{
+  return false;
+}
 }
 
 
 
+
+
 void handleRoot(){
-  jsonDocument doc;
+  JsonDocument doc;
   doc["statuscode"] = 200;
-  doc["data"] = "esp32  is working";
+  doc["response"] = "esp32  is working";
   String output;
   serializeJson(doc,output);
+  serverLogs("/ hitted");
   server.send(200,"application/json",output);
+}
+
+void sResponse(String message){
+  JsonDocument doc;
+  doc["statuscode"] = 200;
+  doc["response"] = message;
+  doc["success"] = true; 
+  String output;
+  serializeJson(doc,output);
+  server.send(404,"application/json",output);
+}
+
+
+void eResponse(String message){
+  JsonDocument doc;
+  doc["statuscode"] = 404;
+  doc["response"] = message;
+  doc["success"] = false; 
+  String output;
+  serializeJson(doc,output);
+  server.send(404,"application/json",output);
 }
 
 void handleLed(){
@@ -26,12 +66,28 @@ void handleLed(){
   server.send(400, "application/json", "{\"error\":\"empty body\"}");
   return;
   }
-  jsonDocument doc;
+  JsonDocument doc;
   deserializeJson(doc,body);
-  int ledpin = doc["ledpin"];
+  if (!doc["action"].is<bool>()) {
+    serverLogs("action is not a boolean.");
+    eResponse("wrong input. 'action' must be true or false.");
+    return;
+  }
   bool action = doc["action"];
 
-  
+  serverLogs("/led route hitted");
+
+  serverLogs("/led action is " + String(action));
+
+  if (action == true){
+    serverLogs("action is true. led is on");
+    lightOn(state.ledPin);
+    sResponse("led is ON.");
+  }else{
+    serverLogs("action is false. led is off");
+    lightOff(state.ledPin);
+    sResponse("led is OFF.");
+  }
 
 }
 

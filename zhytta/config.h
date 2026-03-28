@@ -7,7 +7,9 @@ struct Config{
 };
 struct AppState {
   bool isRunning;
-  int ledId;
+  int ledPin;
 };
+
+
 
 #endif
