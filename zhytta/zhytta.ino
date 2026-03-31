@@ -37,7 +37,7 @@ void loop(){
   bool result = shouldOpenServer();
   if(result == true ){
     server.handleClient();  
-  }else{
+  }else{  
    Serial.println("server is off"); 
   }   
 }
